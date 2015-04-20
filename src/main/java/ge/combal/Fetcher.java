@@ -4,7 +4,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
 public class Fetcher {
 	private String url;
 	private final String userAgent = Util.getConfig("fetcher.userAgent");
-	private final String referer = Util.getConfig("fetcher.referer");
+	private final String referrer = Util.getConfig("fetcher.referrer");
 
 	private String text;
 
@@ -25,26 +25,36 @@ public class Fetcher {
 	private void fetch() throws IOException{
 		Document doc = Jsoup.connect(this.url)
 				.userAgent(userAgent)
-				.referrer(referer)
+				.referrer(referrer)
+				.timeout(10000)
 				.get();
 		text = doc.body().text();
 	}
 
-	private ArrayList<String> splitWords(){
+	private HashMap<String, Counter> splitWords(){
 		//([^ა-ჰ]+(\-)[ა-ჰ]+)|([^ა-ჰ\-]+)
 		//text = text.replaceAll("[^ა-ჰ \\-]", "").replaceAll("( )+", " ");
 		Pattern p = Pattern.compile("[ა-ჰ]+[-]?[ა-ჰ]+", Pattern.MULTILINE);
 		Matcher m = p.matcher(text);
-		ArrayList<String> words = new ArrayList<>();
+//		ArrayList<String> words2 = new ArrayList<>();
+		HashMap<String, Counter> words = new HashMap<>();
 		while (m.find()) {
-			words.add(m.group());
+			String word = m.group();
+			Counter counter;
+			if(words.containsKey(word)) {
+				counter = words.get(word);
+				counter.increment();
+			} else {
+				counter = new Counter();
+			}
+			words.put(word, counter);
 		}
 		return words;
 	}
 
-	public ArrayList<String> execute() throws Exception {
+	public HashMap<String, Counter> execute() throws Exception {
 		fetch();
-		ArrayList<String> words = splitWords();
+		HashMap<String, Counter> words = splitWords();
 //		for(String word : words){
 //			System.out.println(word);
 //		}
