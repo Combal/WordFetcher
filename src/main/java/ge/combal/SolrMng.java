@@ -1,8 +1,11 @@
 package ge.combal;
 
 import org.apache.solr.client.solrj.SolrClient;
+import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.impl.HttpSolrClient;
-import org.apache.solr.client.solrj.response.UpdateResponse;
+import org.apache.solr.client.solrj.response.QueryResponse;
+import org.apache.solr.common.SolrDocument;
+import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.SolrInputDocument;
 
 import java.util.ArrayList;
@@ -17,13 +20,31 @@ public class SolrMng {
 		for(String word : words){
 			addWord(word);
 		}
-		solr.commit();
+//		solr.commit();
 	}
 
 	private static void addWord(String word) throws Exception{
-		SolrInputDocument doc = new SolrInputDocument();
-		doc.addField("word", word);
-		doc.addField("rank", 0);
-		UpdateResponse response = solr.add(doc);
+		SolrQuery parameters = new SolrQuery();
+		parameters.set("q", "word:" + word);
+		QueryResponse response = solr.query(parameters);
+		SolrDocumentList list = response.getResults();
+		Integer rank = 0;
+		String id = null;
+
+		if(list.getNumFound() > 0) {
+			SolrDocument doc = list.get(0);
+			rank = (Integer) doc.getFieldValue("rank") + 1;
+			id = (String) doc.getFieldValue("id");
+		}
+
+		SolrInputDocument newDoc = new SolrInputDocument();
+		if(id != null && !id.isEmpty()){
+			newDoc.addField("id", id);
+		}
+		System.out.println("add word: " + word + ", " + rank + ", " + id);
+		newDoc.addField("word", word);
+		newDoc.addField("rank", rank);
+		solr.add(newDoc);
+		solr.commit();
 	}
 }

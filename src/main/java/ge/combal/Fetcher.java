@@ -44,7 +44,6 @@ public class Fetcher {
 
 	public ArrayList<String> execute() throws Exception {
 		fetch();
-		System.out.println(referer);
 		ArrayList<String> words = splitWords();
 //		for(String word : words){
 //			System.out.println(word);
