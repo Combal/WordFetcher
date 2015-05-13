@@ -12,7 +12,7 @@ public class Main {
 		 * URL to parse
 		 * Parsing same urls win increase ranks of the words in it
 		 */
-		String url = "http://mebonia.com/igavebi/nu-daashorebt-gulebs-ertmanets.html";
+		String url = "http://www.ambioni.ge/xazarula-nodar-dumbaze";
 
 
 		Fetcher fetcher = new Fetcher(url);
