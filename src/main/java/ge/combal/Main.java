@@ -12,8 +12,7 @@ public class Main {
 		 * URL to parse
 		 * Parsing same urls win increase ranks of the words in it
 		 */
-		String url = "http://www.24saati.ge/weekend/story/38435-koba-davitashvili-tolstois-omi-da-mshvidobis-otkhive-tomi-mobiluri-telefonit-maqvs-tsakitkhuli";
-
+		String url = "http://www.ambioni.ge/xazarula-nodar-dumbaze";
 
 		Fetcher fetcher = new Fetcher(url);
 		HashMap<String, Counter> words = fetcher.execute();
